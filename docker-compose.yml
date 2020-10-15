@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  notebook:
+    container_name: ds
+    ports:
+    - 8888:8888
+    build: .
+    volumes:
+    - .:/home/jovyan/work
