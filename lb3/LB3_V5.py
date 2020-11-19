@@ -67,38 +67,41 @@ configs = {
         Y:  {'column_name': 'F', 'start_index': 1},
     },
 }
-SELECTED_VARIANT = 4
+SELECTED_VARIANT = 1
 
 
-# In[15]:
+# In[10]:
 
 
 def calculate_coefficients(data, config):
-    first_component = np.zeros((X_DATA_LENGTH, X_DATA_LENGTH))
-    second_component = np.zeros(X_DATA_LENGTH)
+    loops_count = data.shape[0] - 1
     
-    for index in range(data.shape[0] - 1):
-        x_row = np.array([data[config[X0]['column_name']][config[X0]['start_index'] + index],
-                          data[config[X1]['column_name']][config[X1]['start_index'] + index],
-                          data[config[X2]['column_name']][config[X2]['start_index'] + index],
-                          data[config[X3]['column_name']][config[X3]['start_index'] + index]])
-        x_row_as_2d = x_row.reshape((X_DATA_LENGTH, 1))
-        first_component += x_row_as_2d.dot(x_row_as_2d.T)
-        second_component += x_row * data[config[Y]['column_name']][config[Y]['start_index'] + index]
+    first_component = np.zeros((loops_count, X_DATA_LENGTH))
+    second_component = np.zeros(loops_count)
+    
+    for index in range(loops_count):
+        first_component[index] = np.array([data[config[X0]['column_name']][config[X0]['start_index'] + index],
+                                           data[config[X1]['column_name']][config[X1]['start_index'] + index],
+                                           data[config[X2]['column_name']][config[X2]['start_index'] + index],
+                                           data[config[X3]['column_name']][config[X3]['start_index'] + index]])
+
+        second_component[index] = data[config[Y]['column_name']][config[Y]['start_index'] + index]
+    
+    second_component = first_component.T.dot(second_component)
+    first_component = first_component.T.dot(first_component)
     
     assert first_component.shape == (X_DATA_LENGTH, X_DATA_LENGTH)
     assert second_component.shape == (X_DATA_LENGTH,)
     
     reversed_first_component = np.linalg.inv(first_component)
-    second_component_as_2d = second_component.reshape((X_DATA_LENGTH, 1))
     
-    result = reversed_first_component.dot(second_component_as_2d)
-    assert result.shape == (X_DATA_LENGTH, 1)
+    result = reversed_first_component.dot(second_component)
+    assert result.shape == (X_DATA_LENGTH,)
     
-    return result.reshape(X_DATA_LENGTH)
+    return result
 
 
-# In[14]:
+# In[11]:
 
 
 calculate_coefficients(data, configs[SELECTED_VARIANT])
