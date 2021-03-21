@@ -14,14 +14,17 @@ from scipy.optimize import linprog
 # In[2]:
 
 
+costs = [30, 70, 30, 3, 10, 30]
+
 data = {
-    'Молоко (л.)': [720, 344, 18, 0.2, 30, 10, 24, 6],
-    'Мясо (кг.)': [107, 1460, 151, 10.1, 70, 20, 27, 1],
-    'Яйца (дес.)': [7080, 1040, 78, 13.2, 30, 120, 0, 0.25],
-    'Хлеб (100 гр.)': [0, 75, 2.5, 0.75, 15, 0, 15, 10],
-    'Овощи (100 гр.)': [134, 17.4, 0.2, 0.15, 10, 0, 1.1, 10],
-    'Апельс. сок (литр)': [1000, 240, 4, 1.2, 30, 0, 52, 4],
+    'Молоко (л.)': [720, 344, 18, 0.2, costs[0], 10, 24, 6],
+    'Мясо (кг.)': [107, 1460, 151, 10.1, costs[1], 20, 27, 1],
+    'Яйца (дес.)': [7080, 1040, 78, 13.2, costs[2], 120, 0, 0.25],
+    'Хлеб (100 гр.)': [0, 75, 2.5, 0.75, costs[3], 0, 15, 10],
+    'Овощи (100 гр.)': [134, 17.4, 0.2, 0.15, costs[4], 0, 1.1, 10],
+    'Апельс. сок (литр)': [1000, 240, 4, 1.2, costs[5], 0, 52, 4],
 }
+
 min_values = [5000, 2500, 63, 12.5]
 
 index = [
@@ -48,12 +51,12 @@ cholesterol = df.loc[index[5]].values
 carbonates = df.loc[index[6]].values
 
 # общие ограничения
-general_bounds = [
-    df.loc[index[0]].values * -1,
-    df.loc[index[1]].values * -1,
-    df.loc[index[2]].values * -1,
-    df.loc[index[3]].values * -1,
-]
+general_bounds = np.array([
+    df.loc[index[0]].values,
+    df.loc[index[1]].values,
+    df.loc[index[2]].values,
+    df.loc[index[3]].values,
+]) * -1
 # правая часть общих ограничений
 free_bounds = np.array(min_values) * -1
 
@@ -123,12 +126,10 @@ print(results)
 
 
 final_criteria = np.array([
-#     np.array(alphas[index] * objectives[index] / arr.max()) for index, arr in enumerate(results.T)
-    np.array(alphas[index] * (objectives[index] - arr.min()) / 
-             (arr.max() - arr.min())) for index, arr in enumerate(results.T)
+    np.array(alphas[index] * objectives[index] / arr.max()) for index, arr in enumerate(results.T)
 ])
 
-final = final_criteria.sum(axis=0) * -1
+final = final_criteria.sum(axis=0)
 
 
 # In[11]:
@@ -138,7 +139,7 @@ f4 = calculate_simplex(c=final, A_ub=general_bounds, b_ub=free_bounds, bounds=va
 coefs4 = np.array(f4['x'])
 
 
-# In[19]:
+# In[12]:
 
 
 x2 = coefs4[1]
