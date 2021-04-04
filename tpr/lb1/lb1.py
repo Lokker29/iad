@@ -139,7 +139,7 @@ f4 = calculate_simplex(c=final, A_ub=general_bounds, b_ub=free_bounds, bounds=va
 coefs4 = np.array(f4['x'])
 
 
-# In[12]:
+# In[23]:
 
 
 x2 = coefs4[1]
@@ -161,11 +161,15 @@ while x1 <= df.loc[index[-1]].values[0]:
     x3 = 0
     while x3 <= df.loc[index[-1]].values[2]:
         x = [x1, x2, x3, x4, x5, x6]
+
+        x3 += diff
         
+        if not np.less_equal(np.dot(general_bounds, x), free_bounds).all():
+            continue
+
         scatter_x.append(np.dot(F1, x))
         scatter_y.append(np.dot(F2, x))
-        
-        x3 += diff
+
     x1 += diff
 
 plt.scatter(scatter_x, scatter_y)
@@ -182,7 +186,3 @@ plt.show()
 
 
 # In[ ]:
-
-
-
-

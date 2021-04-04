@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  laboratory:
+    container_name: ds1
+    ports:
+    - 8888:8888
+    image: ubuntu:latest
+    command: sleep 86400
+    volumes:
+    - /Users/lokker/PyCharmProjects/iad:/app
