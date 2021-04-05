@@ -12,4 +12,4 @@ then
   exit 1
 fi
 
-find "$(realpath "$1")" -regextype posix-extended -regex ".*/[^/]{$2,}" | sort | tee result.txt
+find "$(realpath "$1")" -type f -regextype posix-extended -regex ".*/[^/]{$2,}" | sort | tee result.txt
